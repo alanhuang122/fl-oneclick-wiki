@@ -1,0 +1,43 @@
+{
+  "name": "FL 1-click Wiki",
+  "description": "Open corresponding 'Fallen London Wiki' page with one click!",
+  "version": "1.0",
+  "manifest_version": 2,
+  "permissions": [
+    "tabs"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.fallenlondon.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "browser_action": {
+    "default_icon": {
+      "16": "/images/fl-wiki-icon-16.png",
+      "32": "/images/fl-wiki-icon-32.png",
+      "48": "/images/fl-wiki-icon-48.png",
+      "128": "/images/fl-wiki-icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "/images/fl-wiki-icon-16.png",
+    "32": "/images/fl-wiki-icon-32.png",
+    "48": "/images/fl-wiki-icon-48.png",
+    "128": "/images/fl-wiki-icon-128.png"
+  },
+  "web_accessible_resources": [
+    "inject.js"
+  ]
+}
