@@ -2,6 +2,8 @@
 
 [![License](https://img.shields.io/github/license/lensvol/fl-oneclick-wiki)](https://github.com/lensvol/fl-assorted-cats/blob/master/LICENSE) 
 
+![screenshot](https://raw.githubusercontent.com/lensvol/fl-oneclick-wiki/master/screenshot.png)
+
 Simple browser extension for [Fallen London](https://www.fallenlondon.com/) that saves you some clicks on opening FL Wiki pages about specific storylets.
 
 _NB: This extension is **not** yet whitelisted by Failbetter Games. Use at your own risk!_ 
