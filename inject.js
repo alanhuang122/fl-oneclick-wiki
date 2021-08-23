@@ -1,9 +1,10 @@
 (function () {
+    const GLOBE_BTN_CLASS_LIST = "fa fa-inverse fa-stack-1x fa-globe"
     const WIKI_BUTTON_CODE = `<div class="storylet-root__frequency">
     <button class="buttonlet-container" type="button">
         <span class="buttonlet fa-stack fa-lg buttonlet-enabled">
             <span class="fa fa-circle fa-stack-2x"></span>
-            <span class="fa fa-inverse fa-stack-1x fa-globe"></span>
+            <span class="${GLOBE_BTN_CLASS_LIST}"></span>
             <span class="u-visually-hidden">wiki</span>
         </span>
     </button>
@@ -34,6 +35,12 @@
                         mediaRoot = mediaRoots[0];
                     } else {
                         mediaRoot = node;
+                    }
+
+                    let existingButtons = mediaRoot.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
+                    if (existingButtons.length > 0) {
+                        console.debug("Duplicate Wiki buttons found, please tell the developer about it!");
+                        return;
                     }
 
                     let mediaBody = mediaRoot.getElementsByClassName("media__body");
