@@ -1,21 +1,31 @@
 (function () {
     const GLOBE_BTN_CLASS_LIST = "fa fa-inverse fa-stack-1x fa-globe"
-    const WIKI_BUTTON_CODE = `<div class="storylet-root__frequency">
-    <button class="buttonlet-container" type="button">
-        <span class="buttonlet fa-stack fa-lg buttonlet-enabled">
-            <span class="fa fa-circle fa-stack-2x"></span>
-            <span class="${GLOBE_BTN_CLASS_LIST}"></span>
-            <span class="u-visually-hidden">wiki</span>
-        </span>
-    </button>
-</div>
-    `;
 
-    // Taken from https://stackoverflow.com/a/35385518
-    function htmlToElement(html) {
-        let template = document.createElement('template');
-        template.innerHTML = html.trim();
-        return template.content.firstChild;
+    function createWikiButton() {
+        let containerDiv = document.createElement("div");
+        containerDiv.className = "storylet-root__frequency";
+
+        let buttonlet = document.createElement("button");
+        buttonlet.setAttribute("type", "button");
+        buttonlet.className = "buttonlet-container";
+
+        let outerSpan = document.createElement("span");
+        outerSpan.classList.add("buttonlet", "fa-stack", "fa-lg", "buttonlet-enabled");
+
+        [
+            ["fa", "fa-circle", "fa-stack-2x"],
+            GLOBE_BTN_CLASS_LIST.split(" "),
+            ["u-visually-hidden"]
+        ].map(classNames => {
+            let span = document.createElement("span");
+            span.classList.add(...classNames);
+            outerSpan.appendChild(span);
+        })
+
+        buttonlet.appendChild(outerSpan);
+        containerDiv.appendChild(buttonlet);
+
+        return containerDiv;
     }
 
     let mainContentObserver = new MutationObserver(((mutations, observer) => {
@@ -46,7 +56,7 @@
                     let mediaBody = mediaRoot.getElementsByClassName("media__body");
                     if (mediaBody.length > 0) {
                         let container = mediaBody[0];
-                        let wikiButton = htmlToElement(WIKI_BUTTON_CODE);
+                        let wikiButton = createWikiButton();
                         wikiButton.addEventListener("click", function () {
                             let headings = container.parentElement.getElementsByTagName("h1");
                             if (headings.length > 0) {
