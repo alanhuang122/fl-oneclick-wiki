@@ -14,7 +14,6 @@ window.addEventListener("message", function(event) {
         let sanitized = event.data.title
             .replaceAll(" ", "_")
             .replaceAll("'", "%27");
-        console.log(sanitized);
 
         chrome.runtime.sendMessage({sanitized: sanitized}, (response) => {
             console.log("Opened Wiki tab: " + response.url);

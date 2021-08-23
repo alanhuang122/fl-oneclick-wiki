@@ -12,7 +12,7 @@
 
     // Taken from https://stackoverflow.com/a/35385518
     function htmlToElement(html) {
-        var template = document.createElement('template');
+        let template = document.createElement('template');
         template.innerHTML = html.trim();
         return template.content.firstChild;
     }
@@ -25,7 +25,7 @@
                 let node = mutation.addedNodes[n];
 
                 if (node.nodeName.toLowerCase() === "div") {
-                    var mediaRoot = null;
+                    let mediaRoot = null;
                     if (!node.classList.contains("media--root")) {
                         let mediaRoots = node.getElementsByClassName("media--root");
                         if (mediaRoots.length === 0) {
@@ -43,7 +43,7 @@
                         wikiButton.addEventListener("click", function () {
                             let headings = container.parentElement.getElementsByTagName("h1");
                             if (headings.length > 0) {
-                                window.postMessage({action: "openInFLWiki", title: headings[0].textContent})
+                                window.postMessage({action: "openInFLWiki", title: headings[0].textContent});
                             }
                         });
                         let otherButtons = container.getElementsByClassName("storylet-root__frequency");
@@ -58,7 +58,7 @@
                 }
             }
         }
-    }))
+    }));
 
     mainContentObserver.observe(document, {childList: true, subtree: true});
 }())
