@@ -13,9 +13,9 @@ window.addEventListener("message", function(event) {
     if (event.data.action && event.data.action === "openInFLWiki") {
         let sanitized = event.data.title
             .replaceAll(" ", "_")
-            .replaceAll("'", "%27");
+        let encoded = encodeURIComponent(sanitized)
 
-        chrome.runtime.sendMessage({sanitized: sanitized}, (response) => {
+        chrome.runtime.sendMessage({destination: encoded}, (response) => {
             console.log("Opened Wiki tab: " + response.url);
         })
     }
