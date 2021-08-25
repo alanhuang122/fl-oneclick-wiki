@@ -3,9 +3,7 @@
   "description": "Open corresponding 'Fallen London Wiki' page with one click!",
   "version": "1.2",
   "manifest_version": 2,
-  "permissions": [
-    "tabs"
-  ],
+  "permissions": [],
   "background": {
     "scripts": [
       "background.js"
