@@ -99,6 +99,12 @@
                         mediaRoot = node;
                     }
 
+                    const actionResults = mediaRoot.parentElement.getElementsByClassName("media--quality-updates")
+                    if (actionResults.length > 0) {
+                        // This is a page with the action results, they do not have corresponding Wiki pages.
+                        return;
+                    }
+
                     let existingButtons = mediaRoot.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
                     if (existingButtons.length > 0) {
                         console.debug("Duplicate Wiki buttons found, please tell the developer about it!");
