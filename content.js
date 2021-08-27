@@ -15,8 +15,6 @@ window.addEventListener("message", function(event) {
             .replaceAll(" ", "_")
         let encoded = encodeURIComponent(sanitized)
 
-        chrome.runtime.sendMessage({destination: encoded}, (response) => {
-            console.log("Opened Wiki tab: " + response.url);
-        })
+        chrome.runtime.sendMessage({encodedTitle: encoded, storyletId: event.data.storyletId}, () => {});
     }
-})
+});

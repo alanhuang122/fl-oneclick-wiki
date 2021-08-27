@@ -1,5 +1,28 @@
 (function () {
     const GLOBE_BTN_CLASS_LIST = "fa fa-inverse fa-stack-1x fa-globe"
+    let authToken = null;
+
+    async function getStoryletID() {
+        const response = await fetch(
+            "https://api.fallenlondon.com/api/storylet",
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": authToken,
+                },
+            }
+        )
+        if (!response.ok) {
+            throw new Error("FL API did not like our request")
+        }
+
+        const data = await response.json()
+        if (!("storylet" in data)) {
+            throw new Error("Current storylet is unknown.")
+        }
+
+        return data.storylet.id;
+    }
 
     function createWikiButton() {
         let containerDiv = document.createElement("div");
@@ -28,6 +51,34 @@
         return containerDiv;
     }
 
+    function wikiClickListener(container) {
+        return function () {
+            const headings = container.parentElement.getElementsByTagName("h1");
+            const title = headings[0].textContent;
+            if (headings.length === 0) {
+                return;
+            }
+
+            getStoryletID()
+                .then(storyletID => {
+                    console.debug(`Current storylet ID: ${storyletID}`)
+                    window.postMessage({
+                        action: "openInFLWiki",
+                        title: title,
+                        storyletId: storyletID
+                    })
+                })
+                .catch(error => {
+                    console.error(error);
+                    window.postMessage({
+                        action: "openInFLWiki",
+                        title: title,
+                        storyletId: null
+                    })
+                })
+        }
+    }
+
     let mainContentObserver = new MutationObserver(((mutations, observer) => {
         for (let m = 0; m < mutations.length; m++) {
             let mutation = mutations[m];
@@ -37,6 +88,7 @@
 
                 if (node.nodeName.toLowerCase() === "div") {
                     let mediaRoot = null;
+
                     if (!node.classList.contains("media--root")) {
                         let mediaRoots = node.getElementsByClassName("media--root");
                         if (mediaRoots.length === 0) {
@@ -55,15 +107,11 @@
 
                     let mediaBody = mediaRoot.getElementsByClassName("media__body");
                     if (mediaBody.length > 0) {
-                        let container = mediaBody[0];
-                        let wikiButton = createWikiButton();
-                        wikiButton.addEventListener("click", function () {
-                            let headings = container.parentElement.getElementsByTagName("h1");
-                            if (headings.length > 0) {
-                                window.postMessage({action: "openInFLWiki", title: headings[0].textContent});
-                            }
-                        });
-                        let otherButtons = container.getElementsByClassName("storylet-root__frequency");
+                        const container = mediaBody[0];
+                        const wikiButton = createWikiButton();
+                        wikiButton.addEventListener("click", wikiClickListener(container));
+
+                        const otherButtons = container.getElementsByClassName("storylet-root__frequency");
                         if (otherButtons.length > 0) {
                             container.insertBefore(wikiButton, otherButtons[otherButtons.length - 1].nextSibling);
                         } else {
@@ -76,6 +124,18 @@
             }
         }
     }));
+
+    function authTokenSniffer(original_function) {
+        return function (name, value) {
+            if (name === "Authorization" && value !== authToken) {
+                authToken = value;
+                console.debug("Got FL auth token!");
+            }
+            return original_function.apply(this, arguments);
+        }
+    }
+
+    XMLHttpRequest.prototype.setRequestHeader = authTokenSniffer(XMLHttpRequest.prototype.setRequestHeader);
 
     mainContentObserver.observe(document, {childList: true, subtree: true});
 }())
