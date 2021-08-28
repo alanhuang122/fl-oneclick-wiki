@@ -1,6 +1,6 @@
 # FL 1-Click Wiki
 
-[![License](https://img.shields.io/github/license/lensvol/fl-oneclick-wiki)](https://github.com/lensvol/fl-assorted-cats/blob/master/LICENSE) 
+[![License](https://img.shields.io/github/license/lensvol/fl-oneclick-wiki)](https://github.com/lensvol/fl-oneclick-wiki/blob/master/LICENSE) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/lensvol/fl-oneclick-wiki) ![Chrome Web Store](https://img.shields.io/chrome-web-store/v/ceakejjcdgbcocopkdkhiakkohpahien) ![Mozilla Add-on](https://img.shields.io/amo/v/fl-1-click-wiki) 
 
 ![screenshot](https://raw.githubusercontent.com/lensvol/fl-oneclick-wiki/master/screenshot.png)
 
