@@ -136,7 +136,7 @@
 
                     for (const branch of branches) {
                         const branchId = branch.attributes["data-branch-id"].value;
-                        const branchHeader = branch.querySelector("h2[class*='branch__title']")
+                        const branchHeader = branch.querySelector("h2[class*='branch__title'], h2[class*='storylet__heading']");
                         if (!branchHeader) {
                             continue;
                         }
