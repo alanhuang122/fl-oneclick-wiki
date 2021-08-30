@@ -127,7 +127,13 @@
                         }
                     }
 
-                    const branches = node.querySelectorAll("div[data-branch-id]");
+                    let branches = null;
+                    if (node.hasAttribute("data-branch-id")) {
+                        branches = [node];
+                    } else {
+                        branches = node.querySelectorAll("div[data-branch-id]");
+                    }
+
                     for (const branch of branches) {
                         const branchId = branch.attributes["data-branch-id"].value;
                         const branchHeader = branch.querySelector("h2[class*='branch__title']")
