@@ -34,6 +34,7 @@
 
         let outerSpan = document.createElement("span");
         outerSpan.classList.add("buttonlet", "fa-stack", "fa-lg", "buttonlet-enabled");
+        outerSpan.setAttribute("title", "Look it up on Fallen London Wiki");
 
         [
             ["fa", "fa-circle", "fa-stack-2x"],
