@@ -92,40 +92,68 @@
 
                     if (!node.classList.contains("media--root")) {
                         let mediaRoots = node.getElementsByClassName("media--root");
-                        if (mediaRoots.length === 0) {
-                            return;
+                        if (mediaRoots.length !== 0) {
+                            mediaRoot = mediaRoots[0];
                         }
-                        mediaRoot = mediaRoots[0];
                     } else {
                         mediaRoot = node;
                     }
 
-                    const actionResults = mediaRoot.parentElement.getElementsByClassName("media--quality-updates")
-                    if (actionResults.length > 0) {
-                        // This is a page with the action results, they do not have corresponding Wiki pages.
-                        return;
+                    if (mediaRoot) {
+                        const actionResults = mediaRoot.parentElement.getElementsByClassName("media--quality-updates")
+                        if (actionResults.length > 0) {
+                            // This is a page with the action results, they do not have corresponding Wiki pages.
+                            return;
+                        }
+
+                        let existingButtons = mediaRoot.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
+                        if (existingButtons.length > 0) {
+                            console.debug("Duplicate Wiki buttons found, please tell the developer about it!");
+                            return;
+                        }
+
+                        let mediaBody = mediaRoot.getElementsByClassName("media__body");
+                        if (mediaBody.length > 0) {
+                            const container = mediaBody[0];
+                            const wikiButton = createWikiButton();
+                            wikiButton.addEventListener("click", wikiClickListener(container));
+
+                            const otherButtons = container.getElementsByClassName("storylet-root__frequency");
+                            if (otherButtons.length > 0) {
+                                container.insertBefore(wikiButton, otherButtons[otherButtons.length - 1].nextSibling);
+                            } else {
+                                container.insertBefore(wikiButton, container.firstChild);
+                            }
+                        }
                     }
 
-                    let existingButtons = mediaRoot.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
-                    if (existingButtons.length > 0) {
-                        console.debug("Duplicate Wiki buttons found, please tell the developer about it!");
-                        return;
-                    }
+                    const branches = node.querySelectorAll("div[data-branch-id]");
+                    for (const branch of branches) {
+                        const branchId = branch.attributes["data-branch-id"].value;
+                        const branchHeader = branch.querySelector("h2[class*='branch__title']")
+                        if (!branchHeader) {
+                            continue;
+                        }
 
-                    let mediaBody = mediaRoot.getElementsByClassName("media__body");
-                    if (mediaBody.length > 0) {
-                        const container = mediaBody[0];
+                        console.debug(`Processing "${branchHeader.textContent}"`);
+
                         const wikiButton = createWikiButton();
-                        wikiButton.addEventListener("click", wikiClickListener(container));
+                        wikiButton.addEventListener("click", () => {
+                            console.debug(`Opening window for the branch "${branchHeader.textContent} (${branchId})"`);
+                            window.postMessage({
+                                action: "openInFLWiki",
+                                title: branchHeader.textContent,
+                                storyletId: branchId,
+                            })
+                        });
 
-                        const otherButtons = container.getElementsByClassName("storylet-root__frequency");
+                        const otherButtons = branch.querySelectorAll("div[class*='buttonlet']");
+                        const container = branchHeader.parentElement;
                         if (otherButtons.length > 0) {
                             container.insertBefore(wikiButton, otherButtons[otherButtons.length - 1].nextSibling);
                         } else {
                             container.insertBefore(wikiButton, container.firstChild);
                         }
-
-                        return;
                     }
                 }
             }
