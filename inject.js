@@ -143,18 +143,21 @@
                         branches = node.querySelectorAll("div[data-branch-id]");
                     }
 
-                    for (const branch of branches) {
-                        const branchId = branch.attributes["data-branch-id"].value;
-                        const branchHeader = branch.querySelector("h2[class*='branch__title'], h2[class*='storylet__heading']");
+                    for (const branchContainer of branches) {
+                        const branchId = branchContainer.attributes["data-branch-id"].value;
+                        const branchHeader = branchContainer.querySelector("h2[class*='branch__title'], h2[class*='storylet__heading']");
                         if (!branchHeader) {
                             continue;
                         }
 
-                        console.debug(`Processing "${branchHeader.textContent}"`);
+                        let existingButtons = branchContainer.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
+                        if (existingButtons.length > 0) {
+                            console.debug("Duplicate Wiki buttons found, please tell the developer about it!");
+                            return;
+                        }
 
                         const wikiButton = createWikiButton();
                         wikiButton.addEventListener("click", () => {
-                            console.debug(`Opening window for the branch "${branchHeader.textContent} (${branchId})"`);
                             window.postMessage({
                                 action: "openInFLWiki",
                                 title: branchHeader.textContent,
@@ -162,7 +165,7 @@
                             })
                         });
 
-                        const otherButtons = branch.querySelectorAll("div[class*='buttonlet']");
+                        const otherButtons = branchContainer.querySelectorAll("div[class*='buttonlet']");
                         const container = branchHeader.parentElement;
                         if (otherButtons.length > 0) {
                             container.insertBefore(wikiButton, otherButtons[otherButtons.length - 1].nextSibling);
