@@ -1,8 +1,17 @@
 (function () {
-    const GLOBE_BTN_CLASS_LIST = "fa fa-inverse fa-stack-1x fa-globe"
+    const GLOBE_BTN_CLASS_LIST = "fa fa-inverse fa-stack-1x fa-globe";
+    const DONE = 4;
+
     let authToken = null;
+    let currentStoryletId = null;
 
     async function getStoryletID() {
+        if (currentStoryletId != null) {
+            console.debug("Using saved storylet ID...")
+            return currentStoryletId;
+        }
+
+        console.debug("Current storylet ID is unknown, trying to fetch one from server.");
         const response = await fetch(
             "https://api.fallenlondon.com/api/storylet",
             {
@@ -170,13 +179,51 @@
         return function (name, value) {
             if (name === "Authorization" && value !== authToken) {
                 authToken = value;
-                console.debug("Got FL auth token!");
             }
             return original_function.apply(this, arguments);
         }
     }
 
+    function parseResponse(response) {
+        if (this.readyState === DONE) {
+            if (response.currentTarget.responseURL.includes("/api/storylet")) {
+                let data = JSON.parse(response.target.responseText);
+
+                // No point in trying to get storylet ID from a failed request
+                if (!data.isSuccess) {
+                    return;
+                }
+
+                if (data.phase === "Available" || data.phase === "End") {
+                    // We are not in any storylet at the moment or it just ended
+                    currentStoryletId = null;
+                } else if (data.phase === "In") {
+                    // Store retrieved ID to speed up Wiki page lookup in the future
+                    currentStoryletId = data.storylet.id;
+                }
+            }
+        }
+    }
+
+    function openBypass(original_function) {
+        return function (method, url, async) {
+            this.addEventListener("readystatechange", parseResponse);
+            return original_function.apply(this, arguments);
+        };
+    }
+
+    /*
+     We need this for a rare edge case when for some reason we started in a place where no calls
+     to /api/storylet endpoints took place. In that scenario we'll need to do a proactive storylet
+     discovery via an API call and it requires authorization.
+
+     */
     XMLHttpRequest.prototype.setRequestHeader = authTokenSniffer(XMLHttpRequest.prototype.setRequestHeader);
+    /*
+    Here we are doing passive storylet ID discovery, since call to /api/storylet ARE NOT IDEMPOTENT
+    (kudos to Saklad5 for informing me about it and light a candle for Seamus).
+     */
+    XMLHttpRequest.prototype.open = openBypass(XMLHttpRequest.prototype.open);
 
     mainContentObserver.observe(document, {childList: true, subtree: true});
 }())
