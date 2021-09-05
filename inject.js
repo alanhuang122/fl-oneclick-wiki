@@ -108,7 +108,7 @@
                         mediaRoot = node;
                     }
 
-                    if (mediaRoot) {
+                    if (mediaRoot && !mediaRoot.classList.contains("modal-dialog")) {
                         const actionResults = mediaRoot.parentElement.getElementsByClassName("media--quality-updates")
                         if (actionResults.length > 0) {
                             // This is a page with the action results, they do not have corresponding Wiki pages.
