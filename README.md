@@ -41,5 +41,4 @@ Grab it here:
 
 ## TODO
 
-* Optional Wiki buttons on branches.
 * Automatically open pre-filled "Search" for non-existent pages.
