@@ -41,4 +41,3 @@ Grab it from:
 
 ## TODO
 
-* Automatically open pre-filled "Search" for non-existent pages.
