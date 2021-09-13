@@ -1,5 +1,5 @@
 (function () {
-    const GLOBE_BTN_CLASS_LIST = "fa fa-inverse fa-stack-1x fa-globe";
+    const GLOBE_BTN_CLASS_LIST = "fa fa-inverse fa-stack-1x fa-search";
     const DONE = 4;
 
     let currentStoryletId = null;
