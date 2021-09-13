@@ -2,36 +2,7 @@
     const GLOBE_BTN_CLASS_LIST = "fa fa-inverse fa-stack-1x fa-globe";
     const DONE = 4;
 
-    let authToken = null;
     let currentStoryletId = null;
-
-    async function getStoryletID() {
-        if (currentStoryletId != null) {
-            console.debug("Using saved storylet ID...")
-            return currentStoryletId;
-        }
-
-        console.debug("Current storylet ID is unknown, trying to fetch one from server.");
-        const response = await fetch(
-            "https://api.fallenlondon.com/api/storylet",
-            {
-                method: "POST",
-                headers: {
-                    "Authorization": authToken,
-                },
-            }
-        )
-        if (!response.ok) {
-            throw new Error("FL API did not like our request")
-        }
-
-        const data = await response.json()
-        if (!("storylet" in data)) {
-            throw new Error("Current storylet is unknown.")
-        }
-
-        return data.storylet.id;
-    }
 
     function createWikiButton() {
         let containerDiv = document.createElement("div");
@@ -69,23 +40,19 @@
                 return;
             }
 
-            getStoryletID()
-                .then(storyletID => {
-                    console.debug(`Current storylet ID: ${storyletID}`)
-                    window.postMessage({
-                        action: "openInFLWiki",
-                        title: title,
-                        storyletId: storyletID
-                    })
-                })
-                .catch(error => {
-                    console.error(error);
-                    window.postMessage({
-                        action: "openInFLWiki",
-                        title: title,
-                        storyletId: null
-                    })
-                })
+            if (currentStoryletId !== undefined) {
+                if (currentStoryletId != null) {
+                    console.debug(`Current storylet ID: ${currentStoryletId}`)
+                } else{
+                    console.debug(`Current storylet ID is not known, falling back to title...`)
+                }
+
+                window.postMessage({
+                    action: "openInFLWiki",
+                    title: title,
+                    storyletId: currentStoryletId
+                });
+            }
         }
     }
 
@@ -178,15 +145,6 @@
         }
     }));
 
-    function authTokenSniffer(original_function) {
-        return function (name, value) {
-            if (name === "Authorization" && value !== authToken) {
-                authToken = value;
-            }
-            return original_function.apply(this, arguments);
-        }
-    }
-
     function parseResponse(response) {
         if (this.readyState === DONE) {
             if (response.currentTarget.responseURL.includes("/api/storylet")) {
@@ -215,13 +173,6 @@
         };
     }
 
-    /*
-     We need this for a rare edge case when for some reason we started in a place where no calls
-     to /api/storylet endpoints took place. In that scenario we'll need to do a proactive storylet
-     discovery via an API call and it requires authorization.
-
-     */
-    XMLHttpRequest.prototype.setRequestHeader = authTokenSniffer(XMLHttpRequest.prototype.setRequestHeader);
     /*
     Here we are doing passive storylet ID discovery, since call to /api/storylet ARE NOT IDEMPOTENT
     (kudos to Saklad5 for informing me about it and light a candle for Seamus).
