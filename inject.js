@@ -5,14 +5,14 @@
     let currentStoryletId = null;
 
     function createWikiButton() {
-        let containerDiv = document.createElement("div");
+        const containerDiv = document.createElement("div");
         containerDiv.className = "storylet-root__frequency";
 
-        let buttonlet = document.createElement("button");
+        const buttonlet = document.createElement("button");
         buttonlet.setAttribute("type", "button");
         buttonlet.className = "buttonlet-container";
 
-        let outerSpan = document.createElement("span");
+        const outerSpan = document.createElement("span");
         outerSpan.classList.add("buttonlet", "fa-stack", "fa-lg", "buttonlet-enabled");
         outerSpan.setAttribute("title", "Look it up on Fallen London Wiki");
 
@@ -50,7 +50,8 @@
                 window.postMessage({
                     action: "openInFLWiki",
                     title: title,
-                    storyletId: currentStoryletId
+                    storyletId: currentStoryletId,
+                    filterCategories: ["Cards", "Storylets"],
                 });
             }
         }
@@ -58,16 +59,16 @@
 
     let mainContentObserver = new MutationObserver(((mutations, observer) => {
         for (let m = 0; m < mutations.length; m++) {
-            let mutation = mutations[m];
+            const mutation = mutations[m];
 
             for (let n = 0; n < mutation.addedNodes.length; n++) {
-                let node = mutation.addedNodes[n];
+                const node = mutation.addedNodes[n];
 
                 if (node.nodeName.toLowerCase() === "div") {
                     let mediaRoot = null;
 
                     if (!node.classList.contains("media--root")) {
-                        let mediaRoots = node.getElementsByClassName("media--root");
+                        const mediaRoots = node.getElementsByClassName("media--root");
                         if (mediaRoots.length !== 0) {
                             mediaRoot = mediaRoots[0];
                         }
@@ -123,12 +124,30 @@
                             return;
                         }
 
+                        let categories = null;
+                        /*
+                        There are ID collisions between different type of entities in the game,
+                        so it makes sense to restrict search by ID to specific categories.
+
+                        Example: card "Burning Shadows" and branch "Lay a false trail" on "Law's Long Arm"
+                        have same ID - 10137.
+
+                        Kudos to @Thorsb for noticing this and researching this solution!
+                        */
+
+                        if (branchContainer.classList.contains("storylet")) {
+                            categories = ["Cards", "Storylets"];
+                        } else {
+                            categories = ["Actions"];
+                        }
+
                         const wikiButton = createWikiButton();
                         wikiButton.addEventListener("click", () => {
                             window.postMessage({
                                 action: "openInFLWiki",
                                 title: branchHeader.textContent,
                                 storyletId: branchId,
+                                filterCategories: categories,
                             })
                         });
 

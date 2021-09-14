@@ -1,12 +1,12 @@
 // Here we inject our code into the context of the page itself, since we need to patch its XHR mechanisms.
 var s = document.createElement('script');
 s.src = chrome.runtime.getURL('inject.js');
-s.onload = function() {
+s.onload = function () {
     this.remove();
 };
 (document.head || document.documentElement).appendChild(s);
 
-window.addEventListener("message", function(event) {
+window.addEventListener("message", function (event) {
     if (event.source !== window)
         return;
 
@@ -15,6 +15,10 @@ window.addEventListener("message", function(event) {
             .replaceAll(" ", "_")
         let encoded = encodeURIComponent(sanitized)
 
-        chrome.runtime.sendMessage({encodedTitle: encoded, storyletId: event.data.storyletId}, () => {});
+        chrome.runtime.sendMessage({
+            encodedTitle: encoded,
+            storyletId: event.data.storyletId,
+            filterCategories: event.data.filterCategories
+        });
     }
 });

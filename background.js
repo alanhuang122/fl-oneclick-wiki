@@ -9,7 +9,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         let formData = new FormData();
         formData.append("action", "askargs");
         formData.append("format", "json");
-        formData.append("conditions", `ID::${request.storyletId}`);
+        if (request.filterCategories) {
+            const categoryExpr = request.filterCategories.join("||");
+            formData.append("conditions", `\u001fID::${request.storyletId}\u001fCategory:${categoryExpr}`);
+        } else {
+            formData.append("conditions", `ID::${request.storyletId}`);
+        }
         formData.append("printouts", "ID");
 
         fetch("https://fallenlondon.wiki/w/api.php", {method: "POST", body: formData})
