@@ -3,7 +3,7 @@ function openNewTab(url) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    const destination = "https://fallenlondon.wiki/wiki/" + request.encodedTitle;
+    const destination = "https://fallenlondon.wiki/wiki/Special:Search/" + request.encodedTitle;
 
     if (request.storyletId != null) {
         let formData = new FormData();
