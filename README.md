@@ -38,6 +38,7 @@ Grab it from:
 4. Enable "Developer Mode" (top right corner).
 6. Click **Load unpacked** and select the folder where you unzipped the file.
 
-
-## TODO
-
+## Special thanks
+* Asarta - for supplying valuable ideas (but not solutions, tho).
+* [MadeOfMagicAndWires](https://github.com/MadeOfMagicAndWires) - for fixing the issue with button appearing _everywhere_.
+* [Thorsb](https://github.com/thorsb) - for bringing his expertise about FL Wiki and fixing things.
