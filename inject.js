@@ -4,6 +4,12 @@
 
     let currentStoryletId = null;
 
+    /**
+     * @returns true iff we are on the Myself tab of the game
+     */
+    function amIMyself(){
+        return document.location.href.startsWith("https://www.fallenlondon.com/myself");
+    }
     function createWikiButton(buttonOnly = false, className = "storylet-root__frequency") {
         const containerDiv = document.createElement("div");
         containerDiv.className = className;
@@ -75,7 +81,12 @@
                     } else {
                         mediaRoot = node;
                     }
+                    const myself = amIMyself();
 
+                    //if we are on myself page
+                    if (myself){
+                        mediaRoot = node.getElementsByClassName("stack-content--3-of-4")[0];
+                    }
                     if (mediaRoot && !mediaRoot.classList.contains("modal-dialog")) {
                         const actionResults = mediaRoot.parentElement.getElementsByClassName("media--quality-updates")
                         if (actionResults.length > 0) {
@@ -113,7 +124,16 @@
 
                     for (const branchContainer of branches) {
                         const branchId = branchContainer.attributes["data-branch-id"].value;
-                        const branchHeader = branchContainer.querySelector("h2[class*='branch__title'], h2[class*='storylet__heading']");
+                        const branchHeader = myself
+                            ? branchContainer.parentNode.querySelector(".quality-item__body")
+                            : branchContainer.querySelector("h2[class*='branch__title'], h2[class*='storylet__heading']");
+                        const lookupValue = myself
+                            ? branchContainer.firstChild.attributes["alt"].value
+                            : branchHeader.textContent;
+
+                        const container = myself
+                            ? branchHeader.firstChild
+                            : branchHeader.parentElement;
                         if (!branchHeader) {
                             continue;
                         }
@@ -141,18 +161,21 @@
                             categories = ["Actions"];
                         }
 
-                        const wikiButton = createWikiButton();
+                        if (myself){
+                            categories = ["Pyramidal Qualities", "Discrete Qualities"];
+                            //TODO: "Qualities" might also work
+                        }
+                        const wikiButton = createWikiButton(myself);
                         wikiButton.addEventListener("click", () => {
                             window.postMessage({
                                 action: "openInFLWiki",
-                                title: branchHeader.textContent,
+                                title: lookupValue,
                                 storyletId: branchId,
                                 filterCategories: categories,
                             })
                         });
 
                         const otherButtons = branchContainer.querySelectorAll("div[class*='buttonlet']");
-                        const container = branchHeader.parentElement;
                         if (otherButtons.length > 0) {
                             container.insertBefore(wikiButton, otherButtons[otherButtons.length - 1].nextSibling);
                         } else {
