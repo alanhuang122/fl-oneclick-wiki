@@ -10,6 +10,10 @@
     function amIMyself(){
         return document.location.href.startsWith("https://www.fallenlondon.com/myself");
     }
+    /**
+     * @param  {boolean} buttonOnly=false - true iff the surrounding div around the button element should be omitted. 
+     * @param  {string} className="storylet-root__frequency" - CSS class name to give to the div element
+     */
     function createWikiButton(buttonOnly = false, className = "storylet-root__frequency") {
         const containerDiv = document.createElement("div");
         containerDiv.className = className;
@@ -71,6 +75,12 @@
                 const node = mutation.addedNodes[n];
 
                 if (node.nodeName.toLowerCase() === "div") {
+                    // on loading, several elements are inserted into the body
+                    // the div we care for does not have any good identifier,
+                    // so we check for certain elements in its children
+
+                    // first we are looking for the mediaRoot element, which is
+                    // only present on storylets once we have clicked once
                     let mediaRoot = null;
 
                     if (!node.classList.contains("media--root")) {
@@ -100,6 +110,7 @@
                             return;
                         }
 
+                        // this part inserts the button next to the storylet title once you click on the branch
                         let mediaBody = mediaRoot.getElementsByClassName("media__body");
                         if (mediaBody.length > 0) {
                             const container = mediaBody[0];
