@@ -4,9 +4,9 @@
 
     let currentStoryletId = null;
 
-    function createWikiButton() {
+    function createWikiButton(buttonOnly = false, className = "storylet-root__frequency") {
         const containerDiv = document.createElement("div");
-        containerDiv.className = "storylet-root__frequency";
+        containerDiv.className = className;
 
         const buttonlet = document.createElement("button");
         buttonlet.setAttribute("type", "button");
@@ -29,7 +29,7 @@
         buttonlet.appendChild(outerSpan);
         containerDiv.appendChild(buttonlet);
 
-        return containerDiv;
+        return buttonOnly? buttonlet: containerDiv;
     }
 
     function wikiClickListener(container) {
