@@ -51,7 +51,7 @@
                     action: "openInFLWiki",
                     title: title,
                     storyletId: currentStoryletId,
-                    filterCategories: ["Cards", "Storylets"],
+                    filterCategories: ["Card", "Storylet"],
                 });
             }
         }
@@ -136,9 +136,9 @@
                         */
 
                         if (branchContainer.classList.contains("storylet")) {
-                            categories = ["Cards", "Storylets"];
+                            categories = ["Card", "Storylet"];
                         } else {
-                            categories = ["Actions"];
+                            categories = ["Action"];
                         }
 
                         const wikiButton = createWikiButton();

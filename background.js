@@ -11,7 +11,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         formData.append("format", "json");
         if (request.filterCategories) {
             const categoryExpr = request.filterCategories.join("||");
-            formData.append("conditions", `\u001fID::${request.storyletId}\u001fCategory:${categoryExpr}`);
+            formData.append("conditions", `\u001fID::${request.storyletId}\u001fHas Game Type::${categoryExpr}`);
         } else {
             formData.append("conditions", `ID::${request.storyletId}`);
         }
@@ -46,7 +46,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 openNewTab(destination);
             });
     } else {
-        console.debug("No ID found for the storylet, falling back to using title.")
+        console.debug("No ID found for the storylet, falling back to using title.");
         openNewTab(destination);
     }
 
