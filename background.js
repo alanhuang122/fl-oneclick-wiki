@@ -5,6 +5,7 @@ function openNewTab(url) {
 function generateConditions(request){
     let conditions = [];
 
+    conditions.push(`:+`); // only request main namespace, i.e. no User:, Help:, etc pages
     conditions.push(`ID::${request.storyletId}`);
 
     if (request.filterCategories) {
