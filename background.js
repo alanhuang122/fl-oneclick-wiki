@@ -26,6 +26,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         formData.append("action", "askargs");
         formData.append("format", "json");
         formData.append("conditions", conditions);
+        formData.append("parameters", "limit=21");
         formData.append("printouts", "ID");
 
         fetch("https://fallenlondon.wiki/w/api.php", {method: "POST", body: formData})
@@ -42,6 +43,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                 const entries = Object.entries(result.query.results);
                 if (entries.length > 0) {
+                    if (entries.length > 5){
+                        console.warn(`Wiki server returned ${entries.length} results for the query '${conditions}'.\n`
+                                    + `Please notify the wiki admins about this.`);
+                    }
                     for (let [key, entry] of entries) {
                         console.debug(`Opening tab for ${entry.fullurl}`);
                         openNewTab(entry.fullurl);
