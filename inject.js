@@ -138,7 +138,7 @@
                         if (branchContainer.classList.contains("storylet")) {
                             categories = ["Card", "Storylet"];
                         } else {
-                            categories = ["Action"];
+                            categories = ["Action", "Fate Action", "Item Action", "Social Action"] ;
                         }
 
                         const wikiButton = createWikiButton();
