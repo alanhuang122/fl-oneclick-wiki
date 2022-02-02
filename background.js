@@ -2,19 +2,30 @@ function openNewTab(url) {
     chrome.tabs.create({url: url, active: true});
 }
 
+function generateConditions(request){
+    let conditions = [];
+
+    conditions.push(`ID::${request.storyletId}`);
+
+    if (request.filterCategories) {
+        const categoryExpr = request.filterCategories.join("||");
+        conditions.push(`Has Game Type::${categoryExpr}`);
+    }
+
+    // each part of the conditions must start with \u001f
+    return `\u001f` + conditions.join(`\u001f`);
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const destination = "https://fallenlondon.wiki/wiki/Special:Search/" + request.encodedTitle;
 
     if (request.storyletId != null) {
+        const conditions = generateConditions(request);
+        
         let formData = new FormData();
         formData.append("action", "askargs");
         formData.append("format", "json");
-        if (request.filterCategories) {
-            const categoryExpr = request.filterCategories.join("||");
-            formData.append("conditions", `\u001fID::${request.storyletId}\u001fHas Game Type::${categoryExpr}`);
-        } else {
-            formData.append("conditions", `ID::${request.storyletId}`);
-        }
+        formData.append("conditions", conditions);
         formData.append("printouts", "ID");
 
         fetch("https://fallenlondon.wiki/w/api.php", {method: "POST", body: formData})
