@@ -42,3 +42,4 @@ Grab it from:
 * Asarta - for supplying valuable ideas (but not solutions, tho).
 * [MadeOfMagicAndWires](https://github.com/MadeOfMagicAndWires) - for fixing the issue with button appearing _everywhere_.
 * [Thorsb](https://github.com/thorsb) - for bringing his expertise about FL Wiki and fixing things.
+* [Konstantin Kotenko](https://github.com/kkotenko) - for his tireless efforts on keeping us in sync with the reality.
