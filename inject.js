@@ -113,6 +113,13 @@
 
                     for (const branchContainer of branches) {
                         const branchId = branchContainer.attributes["data-branch-id"].value;
+
+                        // This is to prevent button's appearance on the custom branches introduced by the other
+                        // extensions from "FL-series" (e.g. FL Masquerade).
+                        if (branchId >= 777_777_777) {
+                            continue;
+                        }
+
                         const branchHeader = branchContainer.querySelector("h2[class*='branch__title'], h2[class*='storylet__heading']");
                         if (!branchHeader) {
                             continue;
