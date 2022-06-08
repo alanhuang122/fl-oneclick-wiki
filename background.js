@@ -30,7 +30,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         formData.append("parameters", "limit=21");
         formData.append("printouts", "ID");
 
-        fetch("https://fallenlondon.wiki/w/api.php", {method: "POST", body: formData})
+        fetch("https://fallenlondon.wiki/w/api.php", {method: "POST", mode: "cors", body: formData})
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Server did not like our query")
