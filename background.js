@@ -1,5 +1,5 @@
-function openNewTab(url) {
-    chrome.tabs.create({url: url, active: true});
+function openNewTab(url, position) {
+    chrome.tabs.create({url: url, active: true, index: position});
 }
 
 function generateConditions(request){
@@ -19,6 +19,7 @@ function generateConditions(request){
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const destination = "https://fallenlondon.wiki/wiki/Special:Search/" + request.encodedTitle;
+    const targetPosition = sender.tab ? sender.tab.index : 0;
 
     if (request.storyletId != null) {
         const conditions = generateConditions(request);
@@ -50,21 +51,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     }
                     for (let [key, entry] of entries) {
                         console.debug(`Opening tab for ${entry.fullurl}`);
-                        openNewTab(entry.fullurl);
+                        openNewTab(entry.fullurl, targetPosition);
                     }
                 } else {
                     console.debug(`No pages found for ID ${request.storyletId}, falling back to using title.`);
-                    openNewTab(destination);
+                    openNewTab(destination, targetPosition);
                 }
             })
             .catch(error => {
                 console.error(error);
                 console.debug("Error has occured, falling back to using title.")
-                openNewTab(destination);
+                openNewTab(destination, targetPosition);
             });
     } else {
         console.debug("No ID found for the storylet, falling back to using title.");
-        openNewTab(destination);
+        openNewTab(destination, targetPosition);
     }
 
     sendResponse({});
