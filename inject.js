@@ -4,10 +4,14 @@
 
     let currentStoryletId = null;
 
-    function createWikiButton() {
+    function wrapButtonInContainer(button) {
         const containerDiv = document.createElement("div");
-        containerDiv.className = "storylet-root__frequency";
+        containerDiv.className = "branch__plan-buttonlet";
+        containerDiv.appendChild(button);
+        return containerDiv;
+    }
 
+    function createWikiButton() {
         const buttonlet = document.createElement("button");
         buttonlet.setAttribute("type", "button");
         buttonlet.className = "buttonlet-container";
@@ -27,9 +31,7 @@
         })
 
         buttonlet.appendChild(outerSpan);
-        containerDiv.appendChild(buttonlet);
-
-        return containerDiv;
+        return buttonlet;
     }
 
     function wikiClickListener(container) {
@@ -95,9 +97,9 @@
                             const wikiButton = createWikiButton();
                             wikiButton.addEventListener("click", wikiClickListener(container));
 
-                            const otherButtons = container.getElementsByClassName("storylet-root__frequency");
+                            const otherButtons = container.getElementsByClassName("buttonlet-container");
                             if (otherButtons.length > 0) {
-                                container.insertBefore(wikiButton, otherButtons[otherButtons.length - 1].nextSibling);
+                                otherButtons[0].parentElement.insertBefore(wikiButton, otherButtons[0]);
                             } else {
                                 container.insertBefore(wikiButton, container.firstChild);
                             }
@@ -148,7 +150,7 @@
                             categories = ["Action", "Fate Action", "Item Action", "Social Action"] ;
                         }
 
-                        const wikiButton = createWikiButton();
+                        const wikiButton = wrapButtonInContainer(createWikiButton());
                         wikiButton.addEventListener("click", () => {
                             window.postMessage({
                                 action: "openInFLWiki",
