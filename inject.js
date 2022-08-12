@@ -101,7 +101,15 @@
                             if (otherButtons.length > 0) {
                                 otherButtons[0].parentElement.insertBefore(wikiButton, otherButtons[0]);
                             } else {
-                                container.insertBefore(wikiButton, container.firstChild);
+                                let rootFrequencyHolder = container.querySelector("div[class='storylet-root__frequency']")
+                                if (!rootFrequencyHolder) {
+                                    rootFrequencyHolder = document.createElement("div");
+                                    rootFrequencyHolder.classList.add("storylet-root__frequency");
+                                    container.insertBefore(rootFrequencyHolder, container.firstChild);
+                                }
+
+                                //container.insertBefore(wikiButton, container.firstChild);
+                                rootFrequencyHolder.appendChild(wikiButton);
                             }
                         }
                     }
