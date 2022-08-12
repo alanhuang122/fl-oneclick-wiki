@@ -44,9 +44,9 @@
 
             if (currentStoryletId !== undefined) {
                 if (currentStoryletId != null) {
-                    console.debug(`Current storylet ID: ${currentStoryletId}`)
+                    console.debug(`[FL 1-Click Wiki] Current storylet ID: ${currentStoryletId}`)
                 } else{
-                    console.debug(`Current storylet ID is not known, falling back to title...`)
+                    console.debug(`[FL 1-Click Wiki] Current storylet ID is not known, falling back to title...`)
                 }
 
                 window.postMessage({
@@ -87,7 +87,7 @@
 
                         let existingButtons = mediaRoot.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
                         if (existingButtons.length > 0) {
-                            console.debug("Duplicate Wiki buttons found, please tell the developer about it!");
+                            console.debug("[FL 1-Click Wiki] Duplicate Wiki buttons found, please tell the developer about it!");
                             return;
                         }
 
@@ -108,7 +108,6 @@
                                     container.insertBefore(rootFrequencyHolder, container.firstChild);
                                 }
 
-                                //container.insertBefore(wikiButton, container.firstChild);
                                 rootFrequencyHolder.appendChild(wikiButton);
                             }
                         }
@@ -137,7 +136,7 @@
 
                         let existingButtons = branchContainer.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
                         if (existingButtons.length > 0) {
-                            console.debug("Duplicate Wiki buttons found, please tell the developer about it!");
+                            console.debug("[FL 1-Click Wiki] Duplicate Wiki buttons found, please tell the developer about it!");
                             return;
                         }
 

@@ -46,25 +46,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 const entries = Object.entries(result.query.results);
                 if (entries.length > 0) {
                     if (entries.length > 5){
-                        console.warn(`Wiki server returned ${entries.length} results for the query '${conditions}'.\n`
+                        console.warn(`[FL 1-Click Wiki] Wiki server returned ${entries.length} results for the query '${conditions}'.\n`
                                     + `Please notify the wiki admins about this.`);
                     }
                     for (let [key, entry] of entries) {
-                        console.debug(`Opening tab for ${entry.fullurl}`);
+                        console.debug(`[FL 1-Click Wiki] Opening tab for ${entry.fullurl}`);
                         openNewTab(entry.fullurl, targetPosition);
                     }
                 } else {
-                    console.debug(`No pages found for ID ${request.storyletId}, falling back to using title.`);
+                    console.debug(`[FL 1-Click Wiki] No pages found for ID ${request.storyletId}, falling back to using title.`);
                     openNewTab(destination, targetPosition);
                 }
             })
             .catch(error => {
                 console.error(error);
-                console.debug("Error has occured, falling back to using title.")
+                console.debug("[FL 1-Click Wiki] Error has occured, falling back to using title.")
                 openNewTab(destination, targetPosition);
             });
     } else {
-        console.debug("No ID found for the storylet, falling back to using title.");
+        console.debug("[FL 1-Click Wiki] No ID found for the storylet, falling back to using title.");
         openNewTab(destination, targetPosition);
     }
 
