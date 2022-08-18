@@ -122,7 +122,7 @@
                         if (mediaBody.length > 0) {
                             const container = mediaBody[0];
                             const wikiButton = createWikiButton();
-                            wikiButton.addEventListener("click", wikiClickListener(container));
+                            wikiButton.addEventListener("click", wikiButtonClickListener(container));
 
                             const otherButtons = container.getElementsByClassName("buttonlet-container");
                             if (otherButtons.length > 0) {
