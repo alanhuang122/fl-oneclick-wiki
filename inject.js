@@ -37,10 +37,10 @@
     function wikiClickListener(container) {
         return function () {
             const headings = container.parentElement.getElementsByTagName("h1");
-            const title = headings[0].textContent;
             if (headings.length === 0) {
                 return;
             }
+            const title = headings[0].textContent;
 
             if (currentStoryletId !== undefined) {
                 if (currentStoryletId != null) {
