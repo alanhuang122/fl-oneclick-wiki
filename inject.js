@@ -34,7 +34,23 @@
         return buttonlet;
     }
 
-    function wikiClickListener(container) {
+    function createLinkToWiki(text) {
+        const link = document.createElement("a");
+        link.setAttribute("href", "#");
+        link.addEventListener("click", (e) => {
+            window.postMessage({
+                action: "openInFLWiki",
+                title: e.target.textContent,
+                storyletId: null,
+                filterCategories: ["Places"],
+            });
+        });
+        link.textContent = text;
+
+        return link;
+    }
+
+    function wikiButtonClickListener(container) {
         return function () {
             const headings = container.parentElement.getElementsByTagName("h1");
             if (headings.length === 0) {
@@ -68,6 +84,17 @@
 
                 if (node.nodeName.toLowerCase() === "div") {
                     let mediaRoot = null;
+
+                    const locationHeader = node.querySelector("p[class*='welcome__current-area']");
+                    if (locationHeader) {
+                        // Get rid of the trailing comma
+                        const cleanLocation = locationHeader.textContent.slice(0, locationHeader.textContent.length-1);
+                        const locationLink = createLinkToWiki(cleanLocation);
+
+                        locationHeader.textContent = "";
+                        locationHeader.appendChild(locationLink);
+                        locationHeader.appendChild(document.createTextNode(","));
+                    }
 
                     if (!node.classList.contains("media--root")) {
                         const mediaRoots = node.getElementsByClassName("media--root");
