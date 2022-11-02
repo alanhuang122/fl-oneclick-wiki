@@ -6,7 +6,7 @@ function generateConditions(request){
     let conditions = [];
 
     conditions.push(`:+`); // only request main namespace, i.e. no User:, Help:, etc pages
-    conditions.push(`ID::${request.storyletId}`);
+    conditions.push(`ID::${request.entityId}`);
 
     if (request.filterCategories) {
         const categoryExpr = request.filterCategories.join("||");
@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const destination = "https://fallenlondon.wiki/wiki/Special:Search/" + request.encodedTitle;
     const targetPosition = sender.tab ? sender.tab.index : 0;
 
-    if (request.storyletId != null) {
+    if (request.entityId != null) {
         const conditions = generateConditions(request);
         
         let formData = new FormData();
@@ -54,7 +54,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         openNewTab(entry.fullurl, targetPosition);
                     }
                 } else {
-                    console.debug(`[FL 1-Click Wiki] No pages found for ID ${request.storyletId}, falling back to using title.`);
+                    console.debug(`[FL 1-Click Wiki] No pages found for ID ${request.entityId}, falling back to using title.`);
                     openNewTab(destination, targetPosition);
                 }
             })

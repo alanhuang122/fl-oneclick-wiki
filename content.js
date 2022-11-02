@@ -17,7 +17,7 @@ window.addEventListener("message", function (event) {
 
         chrome.runtime.sendMessage({
             encodedTitle: encoded,
-            storyletId: event.data.storyletId,
+            entityId: event.data.entityId,
             filterCategories: event.data.filterCategories
         });
     }

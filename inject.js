@@ -41,7 +41,7 @@
             window.postMessage({
                 action: "openInFLWiki",
                 title: e.target.textContent,
-                storyletId: null,
+                entityId: null,
                 filterCategories: ["Places"],
             });
         });
@@ -68,7 +68,7 @@
                 window.postMessage({
                     action: "openInFLWiki",
                     title: title,
-                    storyletId: currentStoryletId,
+                    entityId: currentStoryletId,
                     filterCategories: ["Card", "Storylet"],
                 });
             }
@@ -192,7 +192,7 @@
                         window.postMessage({
                             action: "openInFLWiki",
                             title: branchHeader.textContent,
-                            storyletId: branchId,
+                            entityId: branchId,
                             filterCategories: categories,
                         })
                     });
