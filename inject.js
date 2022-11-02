@@ -82,125 +82,127 @@
             for (let n = 0; n < mutation.addedNodes.length; n++) {
                 const node = mutation.addedNodes[n];
 
-                if (node.nodeName.toLowerCase() === "div") {
-                    let mediaRoot = null;
+                if (node.nodeName.toLowerCase() !== "div") {
+                    continue;
+                }
 
-                    const locationHeader = node.querySelector("p[class*='welcome__current-area']");
-                    if (locationHeader) {
-                        // Get rid of the trailing comma
-                        const cleanLocation = locationHeader.textContent.slice(0, locationHeader.textContent.length-1);
-                        const locationLink = createLinkToWiki(cleanLocation);
+                let mediaRoot = null;
 
-                        locationHeader.textContent = "";
-                        locationHeader.appendChild(locationLink);
-                        locationHeader.appendChild(document.createTextNode(","));
+                const locationHeader = node.querySelector("p[class*='welcome__current-area']");
+                if (locationHeader) {
+                    // Get rid of the trailing comma
+                    const cleanLocation = locationHeader.textContent.slice(0, locationHeader.textContent.length-1);
+                    const locationLink = createLinkToWiki(cleanLocation);
+
+                    locationHeader.textContent = "";
+                    locationHeader.appendChild(locationLink);
+                    locationHeader.appendChild(document.createTextNode(","));
+                }
+
+                if (!node.classList.contains("media--root")) {
+                    const mediaRoots = node.getElementsByClassName("media--root");
+                    if (mediaRoots.length !== 0) {
+                        mediaRoot = mediaRoots[0];
+                    }
+                } else {
+                    mediaRoot = node;
+                }
+
+                if (mediaRoot && !mediaRoot.classList.contains("modal-dialog")) {
+                    const actionResults = mediaRoot.parentElement.getElementsByClassName("media--quality-updates")
+                    if (actionResults.length > 0) {
+                        // This is a page with the action results, they do not have corresponding Wiki pages.
+                        return;
                     }
 
-                    if (!node.classList.contains("media--root")) {
-                        const mediaRoots = node.getElementsByClassName("media--root");
-                        if (mediaRoots.length !== 0) {
-                            mediaRoot = mediaRoots[0];
-                        }
-                    } else {
-                        mediaRoot = node;
+                    let existingButtons = mediaRoot.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
+                    if (existingButtons.length > 0) {
+                        console.debug("[FL 1-Click Wiki] Duplicate Wiki buttons found, please tell the developer about it!");
+                        return;
                     }
 
-                    if (mediaRoot && !mediaRoot.classList.contains("modal-dialog")) {
-                        const actionResults = mediaRoot.parentElement.getElementsByClassName("media--quality-updates")
-                        if (actionResults.length > 0) {
-                            // This is a page with the action results, they do not have corresponding Wiki pages.
-                            return;
-                        }
+                    let mediaBody = mediaRoot.getElementsByClassName("media__body");
+                    if (mediaBody.length > 0) {
+                        const container = mediaBody[0];
+                        const wikiButton = createWikiButton();
+                        wikiButton.addEventListener("click", wikiButtonClickListener(container));
 
-                        let existingButtons = mediaRoot.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
-                        if (existingButtons.length > 0) {
-                            console.debug("[FL 1-Click Wiki] Duplicate Wiki buttons found, please tell the developer about it!");
-                            return;
-                        }
-
-                        let mediaBody = mediaRoot.getElementsByClassName("media__body");
-                        if (mediaBody.length > 0) {
-                            const container = mediaBody[0];
-                            const wikiButton = createWikiButton();
-                            wikiButton.addEventListener("click", wikiButtonClickListener(container));
-
-                            const otherButtons = container.getElementsByClassName("buttonlet-container");
-                            if (otherButtons.length > 0) {
-                                otherButtons[0].parentElement.insertBefore(wikiButton, otherButtons[0]);
-                            } else {
-                                let rootFrequencyHolder = container.querySelector("div[class='storylet-root__frequency']")
-                                if (!rootFrequencyHolder) {
-                                    rootFrequencyHolder = document.createElement("div");
-                                    rootFrequencyHolder.classList.add("storylet-root__frequency");
-                                    container.insertBefore(rootFrequencyHolder, container.firstChild);
-                                }
-
-                                rootFrequencyHolder.appendChild(wikiButton);
-                            }
-                        }
-                    }
-
-                    let branches = null;
-                    if (node.hasAttribute("data-branch-id")) {
-                        branches = [node];
-                    } else {
-                        branches = node.querySelectorAll("div[data-branch-id]");
-                    }
-
-                    for (const branchContainer of branches) {
-                        const branchId = branchContainer.attributes["data-branch-id"].value;
-
-                        // This is to prevent button's appearance on the custom branches introduced by the other
-                        // extensions from "FL-series" (e.g. FL Masquerade).
-                        if (branchId >= 777_777_777) {
-                            continue;
-                        }
-
-                        const branchHeader = branchContainer.querySelector("h2[class*='branch__title'], h2[class*='storylet__heading']");
-                        if (!branchHeader) {
-                            continue;
-                        }
-
-                        let existingButtons = branchContainer.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
-                        if (existingButtons.length > 0) {
-                            console.debug("[FL 1-Click Wiki] Duplicate Wiki buttons found, please tell the developer about it!");
-                            return;
-                        }
-
-                        let categories = null;
-                        /*
-                        There are ID collisions between different type of entities in the game,
-                        so it makes sense to restrict search by ID to specific categories.
-
-                        Example: card "Burning Shadows" and branch "Lay a false trail" on "Law's Long Arm"
-                        have same ID - 10137.
-
-                        Kudos to @Thorsb for noticing this and researching this solution!
-                        */
-
-                        if (branchContainer.classList.contains("storylet")) {
-                            categories = ["Card", "Storylet"];
-                        } else {
-                            categories = ["Action", "Fate Action", "Item Action", "Social Action"] ;
-                        }
-
-                        const wikiButton = wrapButtonInContainer(createWikiButton());
-                        wikiButton.addEventListener("click", () => {
-                            window.postMessage({
-                                action: "openInFLWiki",
-                                title: branchHeader.textContent,
-                                storyletId: branchId,
-                                filterCategories: categories,
-                            })
-                        });
-
-                        const otherButtons = branchContainer.querySelectorAll("div[class*='buttonlet']");
-                        const container = branchHeader.parentElement;
+                        const otherButtons = container.getElementsByClassName("buttonlet-container");
                         if (otherButtons.length > 0) {
-                            container.insertBefore(wikiButton, otherButtons[otherButtons.length - 1].nextSibling);
+                            otherButtons[0].parentElement.insertBefore(wikiButton, otherButtons[0]);
                         } else {
-                            container.insertBefore(wikiButton, container.firstChild);
+                            let rootFrequencyHolder = container.querySelector("div[class='storylet-root__frequency']")
+                            if (!rootFrequencyHolder) {
+                                rootFrequencyHolder = document.createElement("div");
+                                rootFrequencyHolder.classList.add("storylet-root__frequency");
+                                container.insertBefore(rootFrequencyHolder, container.firstChild);
+                            }
+
+                            rootFrequencyHolder.appendChild(wikiButton);
                         }
+                    }
+                }
+
+                let branches = null;
+                if (node.hasAttribute("data-branch-id")) {
+                    branches = [node];
+                } else {
+                    branches = node.querySelectorAll("div[data-branch-id]");
+                }
+
+                for (const branchContainer of branches) {
+                    const branchId = branchContainer.attributes["data-branch-id"].value;
+
+                    // This is to prevent button's appearance on the custom branches introduced by the other
+                    // extensions from "FL-series" (e.g. FL Masquerade).
+                    if (branchId >= 777_777_777) {
+                        continue;
+                    }
+
+                    const branchHeader = branchContainer.querySelector("h2[class*='branch__title'], h2[class*='storylet__heading']");
+                    if (!branchHeader) {
+                        continue;
+                    }
+
+                    let existingButtons = branchContainer.getElementsByClassName(GLOBE_BTN_CLASS_LIST);
+                    if (existingButtons.length > 0) {
+                        console.debug("[FL 1-Click Wiki] Duplicate Wiki buttons found, please tell the developer about it!");
+                        return;
+                    }
+
+                    let categories = null;
+                    /*
+                    There are ID collisions between different type of entities in the game,
+                    so it makes sense to restrict search by ID to specific categories.
+
+                    Example: card "Burning Shadows" and branch "Lay a false trail" on "Law's Long Arm"
+                    have same ID - 10137.
+
+                    Kudos to @Thorsb for noticing this and researching this solution!
+                    */
+
+                    if (branchContainer.classList.contains("storylet")) {
+                        categories = ["Card", "Storylet"];
+                    } else {
+                        categories = ["Action", "Fate Action", "Item Action", "Social Action"] ;
+                    }
+
+                    const wikiButton = wrapButtonInContainer(createWikiButton());
+                    wikiButton.addEventListener("click", () => {
+                        window.postMessage({
+                            action: "openInFLWiki",
+                            title: branchHeader.textContent,
+                            storyletId: branchId,
+                            filterCategories: categories,
+                        })
+                    });
+
+                    const otherButtons = branchContainer.querySelectorAll("div[class*='buttonlet']");
+                    const container = branchHeader.parentElement;
+                    if (otherButtons.length > 0) {
+                        container.insertBefore(wikiButton, otherButtons[otherButtons.length - 1].nextSibling);
+                    } else {
+                        container.insertBefore(wikiButton, container.firstChild);
                     }
                 }
             }
