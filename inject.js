@@ -2,6 +2,8 @@
     const GLOBE_BTN_CLASS_LIST = "fa fa-inverse fa-stack-1x fa-search";
     const DONE = 4;
 
+    const tooltipToQuality = new Map();
+
     let currentStoryletId = null;
 
     function wrapButtonInContainer(button) {
@@ -204,6 +206,22 @@
                     } else {
                         container.insertBefore(wikiButton, container.firstChild);
                     }
+
+                    let qualityIcons = node.querySelectorAll("div[class*='quality-requirement'] div[role='button'] img");
+                    for (const qualityIcon of qualityIcons) {
+                        qualityIcon.onclick = function(ev) {
+                            const icon = qualityIcon;
+                            const associatedQuality = tooltipToQuality.get(icon.alt);
+                            if (associatedQuality != null) {
+                                window.postMessage({
+                                    action: "openInFLWiki",
+                                    title: associatedQuality.qualityName,
+                                    entityId: associatedQuality.qualityId,
+                                    filterCategories: ["Quality", "Item"],
+                                })
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -220,11 +238,31 @@
                 }
 
                 if (data.phase === "Available" || data.phase === "End") {
-                    // We are not in any storylet at the moment or it just ended
+                    // We are not in any storylet at the moment, or it just ended
                     currentStoryletId = null;
                 } else if (data.phase === "In") {
                     // Store retrieved ID to speed up Wiki page lookup in the future
                     currentStoryletId = data.storylet.id;
+                }
+
+                tooltipToQuality.clear();
+
+                if (data.storylets) {
+                    for (const storylet of data.storylets) {
+                        for (const qualityRequirement of storylet.qualityRequirements) {
+                            const plainTextTooltip = qualityRequirement.tooltip.replace(/(<([^>]+)>)/gi, "");
+
+                            tooltipToQuality.set(plainTextTooltip, qualityRequirement);
+                        }
+                    }
+                } else if (data.storylet) {
+                    for (const branch of data.storylet.childBranches) {
+                        for (const qualityRequirement of branch.qualityRequirements) {
+                            const plainTextTooltip = qualityRequirement.tooltip.replace(/(<([^>]+)>)/gi, "");
+
+                            tooltipToQuality.set(plainTextTooltip, qualityRequirement);
+                        }
+                    }
                 }
             }
         }
@@ -238,7 +276,7 @@
     }
 
     /*
-    Here we are doing passive storylet ID discovery, since call to /api/storylet ARE NOT IDEMPOTENT
+    Here we are doing passive storylet ID discovery, since calls to /api/storylet ARE NOT IDEMPOTENT
     (kudos to Saklad5 for informing me about it and light a candle for Seamus).
      */
     XMLHttpRequest.prototype.open = openBypass(XMLHttpRequest.prototype.open);
