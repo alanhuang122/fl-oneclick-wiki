@@ -209,6 +209,9 @@
 
                     let qualityIcons = node.querySelectorAll("div[class*='quality-requirement'] div[role='button'] img");
                     for (const qualityIcon of qualityIcons) {
+                        qualityIcon.classList.remove("cursor-default");
+                        qualityIcon.classList.add("cursor-magnifier");
+
                         qualityIcon.onclick = function(ev) {
                             const icon = qualityIcon;
                             const associatedQuality = tooltipToQuality.get(icon.alt);
