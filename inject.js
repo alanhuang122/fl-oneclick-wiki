@@ -220,7 +220,7 @@
                                     action: "openInFLWiki",
                                     title: associatedQuality.qualityName,
                                     entityId: associatedQuality.qualityId,
-                                    filterCategories: ["Quality", "Item"],
+                                    filterCategories: ["Quality", "Item", "World Quality"],
                                 })
                             }
                         }
