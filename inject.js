@@ -6,6 +6,25 @@
 
     let currentStoryletId = null;
 
+    function createLocationMimic() {
+        const mimicLocationLabel = document.createElement("p");
+        mimicLocationLabel.classList.add("heading", "heading--2", "welcome__current-area");
+        return mimicLocationLabel;
+    }
+
+    function updateLocationMimic(mimicLabel, location) {
+        // Get rid of the trailing comma
+        const cleanLocation = location.slice(0, location.length-1);
+        const locationLink = createLinkToWiki(cleanLocation);
+
+        while (mimicLabel.firstChild) {
+            mimicLabel.removeChild(mimicLabel.firstChild);
+        }
+
+        mimicLabel.appendChild(locationLink);
+        mimicLabel.appendChild(document.createTextNode(","));
+    }
+
     function wrapButtonInContainer(button) {
         const containerDiv = document.createElement("div");
         containerDiv.className = "branch__plan-buttonlet";
@@ -92,13 +111,16 @@
 
                 const locationHeader = node.querySelector("p[class*='welcome__current-area']");
                 if (locationHeader) {
-                    // Get rid of the trailing comma
-                    const cleanLocation = locationHeader.textContent.slice(0, locationHeader.textContent.length-1);
-                    const locationLink = createLinkToWiki(cleanLocation);
+                    locationHeader.style.display = "none";
 
-                    locationHeader.textContent = "";
-                    locationHeader.appendChild(locationLink);
-                    locationHeader.appendChild(document.createTextNode(","));
+                    const locationMimic = createLocationMimic();
+                    locationHeader.parentElement.insertBefore(locationMimic, locationHeader);
+
+                    updateLocationMimic(locationMimic, locationHeader.textContent);
+                    const testObserver = new MutationObserver(((mutations, observer) => {
+                        updateLocationMimic(locationMimic, locationHeader.textContent);
+                    }));
+                    testObserver.observe(locationHeader, { characterData: true, attributes: false, childList: false, subtree: true });
                 }
 
                 if (!node.classList.contains("media--root")) {
