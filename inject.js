@@ -228,23 +228,23 @@
                     } else {
                         container.insertBefore(wikiButton, container.firstChild);
                     }
+                }
 
-                    let qualityIcons = node.querySelectorAll("div[class*='quality-requirement'] div[role='button'] img");
-                    for (const qualityIcon of qualityIcons) {
-                        qualityIcon.classList.remove("cursor-default");
-                        qualityIcon.classList.add("cursor-magnifier");
+                let qualityIcons = node.querySelectorAll("div[class*='quality-requirement'] div[role='button'] img");
+                for (const qualityIcon of qualityIcons) {
+                    qualityIcon.classList.remove("cursor-default");
+                    qualityIcon.classList.add("cursor-magnifier");
 
-                        qualityIcon.onclick = function(ev) {
-                            const icon = qualityIcon;
-                            const associatedQuality = tooltipToQuality.get(icon.alt);
-                            if (associatedQuality != null) {
-                                window.postMessage({
-                                    action: "openInFLWiki",
-                                    title: associatedQuality.qualityName,
-                                    entityId: associatedQuality.qualityId,
-                                    filterCategories: ["Quality", "Item", "World Quality"],
-                                })
-                            }
+                    qualityIcon.onclick = function(ev) {
+                        const icon = qualityIcon;
+                        const associatedQuality = tooltipToQuality.get(icon.alt);
+                        if (associatedQuality != null) {
+                            window.postMessage({
+                                action: "openInFLWiki",
+                                title: associatedQuality.qualityName,
+                                entityId: associatedQuality.qualityId,
+                                filterCategories: ["Quality", "Item", "World Quality"],
+                            })
                         }
                     }
                 }
@@ -273,6 +273,30 @@
 
     function parseResponse(response) {
         if (this.readyState === DONE) {
+            if (response.currentTarget.responseURL.includes("/api/plan")) {
+                let data = JSON.parse(response.target.responseText);
+
+                if (!data.isSuccess) {
+                    return;
+                }
+                
+                for (const activePlan of data.active) {
+                    for (const qualityRequirement of activePlan.branch.qualityRequirements) {
+                        const plainTextTooltip = qualityRequirement.tooltip.replace(/(<([^>]+)>)/gi, "");
+
+                        tooltipToQuality.set(plainTextTooltip, qualityRequirement);
+                    }
+                }
+
+                for (const completedPlan of data.complete) {
+                    for (const qualityRequirement of completedPlan.branch.qualityRequirements) {
+                        const plainTextTooltip = qualityRequirement.tooltip.replace(/(<([^>]+)>)/gi, "");
+
+                        tooltipToQuality.set(plainTextTooltip, qualityRequirement);
+                    }
+                }
+            }
+
             if (response.currentTarget.responseURL.includes("/api/storylet")) {
                 let data = JSON.parse(response.target.responseText);
 
