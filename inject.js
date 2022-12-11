@@ -248,6 +248,25 @@
                         }
                     }
                 }
+
+                let myselfQualityIcons = node.querySelectorAll("div[class*='quality-item__icon']");
+                for (const qualityIcon of myselfQualityIcons) {
+                    qualityIcon.classList.remove("cursor-default");
+                    qualityIcon.classList.add("cursor-magnifier");
+
+                    qualityIcon.onclick = function(ev) {
+                        const icon = qualityIcon;
+                        if (icon != null) {
+                            window.postMessage({
+                                action: "openInFLWiki",
+                                title: "",
+                                entityId: icon.attributes["data-branch-id"].value,
+                                filterCategories: ["Quality", "Item", "World Quality"],
+                            })
+                        }
+                    }
+                }
+
             }
         }
     }));
