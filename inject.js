@@ -3,6 +3,7 @@
     const DONE = 4;
 
     const tooltipToQuality = new Map();
+    const nameToQuality = new Map();
 
     let currentStoryletId = null;
 
@@ -267,12 +268,47 @@
                     }
                 }
 
+                let sidebarQualityIcons = node.querySelectorAll("li[class*='sidebar-quality'] img");
+                for (const qualityIcon of sidebarQualityIcons) {
+                    qualityIcon.classList.remove("cursor-default");
+                    qualityIcon.classList.add("cursor-magnifier");
+
+                    qualityIcon.onclick = function(ev) {
+                        const icon = qualityIcon;
+                        const associatedQuality = nameToQuality.get(icon.alt);
+
+                        if (associatedQuality != null) {
+                            window.postMessage({
+                                action: "openInFLWiki",
+                                title: associatedQuality.name,
+                                entityId: associatedQuality.id,
+                                filterCategories: ["Quality", "Item", "World Quality"],
+                            })
+                        }
+                    }
+                }
             }
         }
     }));
 
     function parseResponse(response) {
         if (this.readyState === DONE) {
+            if (response.currentTarget.responseURL.includes("/api/character/myself")) {
+                let data = JSON.parse(response.target.responseText);
+
+                nameToQuality.clear();
+                for (const qualityCategory of data.possessions) {
+                    for (const quality of qualityCategory.possessions) {
+                        // I don't think items will ever be parts of either sidebar
+                        if (quality.nature === "Thing") {
+                            continue;
+                        }
+
+                        nameToQuality.set(quality.name, quality);
+                    }
+                }
+            }
+
             if (response.currentTarget.responseURL.includes("/api/plan")) {
                 let data = JSON.parse(response.target.responseText);
 
