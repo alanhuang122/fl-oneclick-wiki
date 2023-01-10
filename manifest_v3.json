@@ -1,7 +1,7 @@
 {
   "name": "FL 1-click Wiki",
   "description": "Open corresponding 'Fallen London Wiki' page with one click!",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "manifest_version": 3,
   "background": {
     "service_worker": "background.js"
