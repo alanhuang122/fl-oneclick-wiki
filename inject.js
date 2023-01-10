@@ -284,13 +284,6 @@
                                 entityId: associatedQuality.id,
                                 filterCategories: ["Quality", "Item", "World Quality"],
                             })
-                        } else {
-                            window.postMessage({
-                                action: "openInFLWiki",
-                                title: icon.alt,
-                                entityId: null,
-                                filterCategories: ["Quality", "Item", "World Quality"],
-                            })
                         }
                     }
                 }
