@@ -60,7 +60,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             })
             .catch(error => {
                 console.error(error);
-                console.debug("[FL 1-Click Wiki] Error has occured, falling back to using title.")
+                console.debug("[FL 1-Click Wiki] Error has occurred, falling back to using title.")
                 openNewTab(destination, targetPosition);
             });
     } else {
