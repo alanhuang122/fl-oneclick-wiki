@@ -242,7 +242,7 @@
                         if (associatedQuality != null) {
                             window.postMessage({
                                 action: "openInFLWiki",
-                                title: associatedQuality.qualityName,
+                                title: associatedQuality.qualityName.replace(/(<([^>]+)>)/gi, ""),
                                 entityId: associatedQuality.qualityId,
                                 filterCategories: ["Quality", "Item", "World Quality"],
                             })
