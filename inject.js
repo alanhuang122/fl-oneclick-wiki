@@ -104,7 +104,10 @@
             for (let n = 0; n < mutation.addedNodes.length; n++) {
                 const node = mutation.addedNodes[n];
 
-                if (node.nodeName.toLowerCase() !== "div") {
+                // When user filters qualities on "Myself" page, FL UI removes
+                // individual <li> items instead of the whole container,
+                // so we need to also process them here.
+                if (!["li", "div"].includes(node.nodeName.toLowerCase())) {
                     continue;
                 }
 
