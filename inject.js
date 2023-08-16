@@ -252,8 +252,13 @@
 
                 let myselfQualityIcons = node.querySelectorAll("div[class*='quality-item__icon']");
                 for (const qualityIcon of myselfQualityIcons) {
-                    qualityIcon.classList.remove("cursor-default");
-                    qualityIcon.classList.add("cursor-magnifier");
+                    // If we do cursor class swap eagerly in the loop, then constant modifications to the class list
+                    // will cause the page to needlessly reflow, which is not good for performance.
+                    // By doing it lazily, we spread out everything over multiple frames, which is better.
+                    qualityIcon.addEventListener("mouseover", function(ev) {
+                        qualityIcon.classList.remove("cursor-default");
+                        qualityIcon.classList.add("cursor-magnifier");
+                    });
 
                     qualityIcon.onclick = function(ev) {
                         const icon = qualityIcon;
