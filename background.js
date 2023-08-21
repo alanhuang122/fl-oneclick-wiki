@@ -43,15 +43,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     throw new Error(result.error.info);
                 }
 
-                const entries = Object.entries(result.query.results);
-                if (entries.length > 0) {
-                    if (entries.length > 5){
-                        console.warn(`[FL 1-Click Wiki] Wiki server returned ${entries.length} results for the query '${conditions}'.\n`
-                                    + `Please notify the wiki admins about this.`);
-                    }
-                    for (let [key, entry] of entries) {
-                        console.debug(`[FL 1-Click Wiki] Opening tab for ${entry.fullurl}`);
-                        openNewTab(entry.fullurl, targetPosition);
+                const results = new Map(Object.entries(result.query.results));
+                if (results.size === 1) {
+                    // Exact match for our ID found, no need for additional heuristics.
+                    openNewTab(results.values().next().value.fullurl, targetPosition);
+                }
+                else if (results.size > 1) {
+                    /*
+                    Some storylets may have multiple pages assigned to their ID (e.g. Arbor, Zee-Dreams).
+                    In this case, we only want to open the page that matches the storylet's title _exactly_.
+                    */
+
+                    const exactTitleEntry = results.get(request.originalTitle);
+                    if (exactTitleEntry != null) {
+                        // Exact match found, just open that page and it should be enough.
+                        console.debug(`[FL 1-Click Wiki] Found exact match for '${request.originalTitle}', opening tab for '${exactTitleEntry.fullurl}'`);
+                        openNewTab(exactTitleEntry.fullurl, targetPosition);
+                    } else {
+                        // No exact match found, so go wild and open all pages for use to decide.
+                        for (let [key, entry] of results) {
+                            console.debug(`[FL 1-Click Wiki] Opening tab for ${entry.fullurl}`);
+                            openNewTab(entry.fullurl, targetPosition);
+                        }
                     }
                 } else {
                     console.debug(`[FL 1-Click Wiki] No pages found for ID ${request.entityId}, falling back to using title.`);
