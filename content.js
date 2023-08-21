@@ -16,6 +16,7 @@ window.addEventListener("message", function (event) {
         let encoded = encodeURIComponent(sanitized)
 
         chrome.runtime.sendMessage({
+            originalTitle: event.data.title,
             encodedTitle: encoded,
             entityId: event.data.entityId,
             filterCategories: event.data.filterCategories
