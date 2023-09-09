@@ -359,7 +359,7 @@
                 if (data.phase === "Available" || data.phase === "End") {
                     // We are not in any storylet at the moment, or it just ended
                     currentStoryletId = null;
-                } else if (data.phase === "In") {
+                } else if (["In", "InItemUse"].includes(data.phase)) {
                     // Store retrieved ID to speed up Wiki page lookup in the future
                     currentStoryletId = data.storylet.id;
                 }
