@@ -110,6 +110,12 @@
                 if (!["li", "div"].includes(node.nodeName.toLowerCase())) {
                     continue;
                 }
+                // on loading, several elements are inserted into the body
+                // the div we care for does not have any good identifier,
+                // so we check for certain elements in its children
+
+                // first we are looking for the mediaRoot element, which is
+                // only present on storylets once we have clicked once
 
                 let mediaRoot = null;
 
@@ -149,6 +155,7 @@
                         return;
                     }
 
+                    // this part inserts the button next to the storylet title once you click on the branch
                     let mediaBody = mediaRoot.getElementsByClassName("media__body");
                     if (mediaBody.length > 0) {
                         const container = mediaBody[0];
