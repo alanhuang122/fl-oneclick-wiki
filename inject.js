@@ -179,11 +179,19 @@
                 }
 
                 for (const branchContainer of branches) {
-                    const branchId = branchContainer.attributes["data-branch-id"].value;
+                    // Explicitly convert branch ID to integer, since in the FL code it is set as string and
+                    // FL extensions set it as number.
+                    const branchId = parseInt(branchContainer.attributes["data-branch-id"].value);
 
                     // This is to prevent button's appearance on the custom branches introduced by the other
                     // extensions from "FL-series" (e.g. FL Masquerade).
                     if (branchId >= 777_777_777) {
+                        continue;
+                    }
+
+                    // Apparently FBG decided to re-use branch container component for the list of "revisitable"
+                    // stories on the "Extended Exceptional Friendship" page, so we skip it.
+                    if (branchId === 0) {
                         continue;
                     }
 
